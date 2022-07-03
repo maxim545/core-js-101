@@ -596,23 +596,20 @@ function distinct(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
-  /* const newObject = {};
+function group(array, keySelector, valueSelector) {
+  const newObject = {};
   array.map((el) => {
-    let key = el[keySelector];
-    if (key && !key.includes(valueSelector)) {
-      key.push(valueSelector);
-    } else {
+    if (newObject[keySelector(el)] && !newObject[keySelector(el)].includes(valueSelector(el))) {
+      newObject[keySelector(el)].push(valueSelector(el));
+    } else if (!newObject[keySelector(el)]) {
       const param = [];
-      param.push(valueSelector);
-      key = [...param];
+      param.push(valueSelector(el));
+      newObject[keySelector(el)] = [...param];
     }
     return array;
   });
-  return newObject; */
+  return Object.entries(newObject);
 }
-
 
 /**
  * Projects each element of the specified array to a sequence
@@ -627,8 +624,10 @@ function group(/* array, keySelector, valueSelector */) {
  *   [[1, 2], [3, 4], [5, 6]], (x) => x     =>   [ 1, 2, 3, 4, 5, 6 ]
  *   ['one','two','three'], x=>x.split('')  =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
-function selectMany(/* arr, childrenSelector */) {
-  throw new Error('Not implemented');
+function selectMany(arr, childrenSelector) {
+  const newArr = [];
+  arr.map((el) => newArr.push(...childrenSelector(el)));
+  return newArr;
 }
 
 
@@ -644,8 +643,13 @@ function selectMany(/* arr, childrenSelector */) {
  *   ['one','two','three'], [2]       => 'three'  (arr[2])
  *   [[[ 1, 2, 3]]], [ 0, 0, 1 ]      => 2        (arr[0][0][1])
  */
-function getElementByIndexes(/* arr, indexes */) {
-  throw new Error('Not implemented');
+function getElementByIndexes(arr, indexes) {
+  let num = arr;
+  indexes.map((el, i) => {
+    num = num[indexes[i]];
+    return el;
+  });
+  return num;
 }
 
 
@@ -667,8 +671,17 @@ function getElementByIndexes(/* arr, indexes */) {
  *   [ 1, 2, 3, 4, 5, 6, 7, 8 ]   =>  [ 5, 6, 7, 8, 1, 2, 3, 4 ]
  *
  */
-function swapHeadAndTail(/* arr */) {
-  throw new Error('Not implemented');
+function swapHeadAndTail(arr) {
+  const avarageIndex = Math.floor(arr.length / 2);
+  const avarageEl = arr[avarageIndex];
+  const left = arr.slice(0, avarageIndex);
+  let rigth;
+  if (arr.length % 2 === 0) {
+    rigth = arr.slice(avarageIndex);
+    return [...rigth, ...left];
+  }
+  rigth = arr.slice(avarageIndex + 1);
+  return [...rigth, avarageEl, ...left];
 }
 
 
