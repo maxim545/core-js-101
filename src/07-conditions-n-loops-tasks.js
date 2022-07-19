@@ -140,8 +140,22 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  const bol = true;
+  const left1 = rect1.left;
+  const right1 = rect1.left + rect1.width;
+  const left2 = rect2.left;
+  const right2 = rect2.left + rect2.width;
+
+  const top1 = rect1.top;
+  const bottom1 = rect1.top + rect1.height;
+  const top2 = rect2.top;
+  const bottom2 = rect1.top + rect1.height;
+
+  if (left1 > right2 || left2 > right1 || top1 > bottom2 || top2 > bottom1) {
+    return false;
+  }
+  return bol;
 }
 
 
@@ -172,19 +186,25 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *
  */
 function isInsideCircle(circle, point) {
-  const makeCoord = (coord) => {
+  const makeCoord = (coord, radius) => {
     const arr = [];
-    for (let i = coord; i <= circle.radius; i += 1) {
-      arr.push(i);
-      arr.push(i * -1);
+    for (let i = coord - radius; i <= circle.radius + coord; i += 1) {
+      if (i === coord - radius || i === circle.radius + coord) {
+        arr.push(i);
+      }
     }
     return arr;
   };
-  const coordX = makeCoord(circle.center.x);
-  const coordY = makeCoord(circle.center.y);
+  const coordX = makeCoord(circle.center.x, circle.radius);
+  const coordY = makeCoord(circle.center.y, circle.radius);
   let bol = false;
-  if (coordX.includes(point.x) && coordY.includes(point.y)) {
+  // eslint-disable-next-line max-len
+  if ((coordX[0] < point.x && coordX[1] > point.x) && (coordY[0] < point.y && coordY[1] > point.y)) {
     bol = true;
+  }
+  // eslint-disable-next-line max-len
+  if ((point.x === point.y) && !(coordX[0] < point.x - 1 && coordX[1] > point.x + 1) && !(coordY[0] < point.y - 1 && coordY[1] > point.y + 1)) {
+    bol = false;
   }
   return bol;
 }
