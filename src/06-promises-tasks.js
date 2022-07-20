@@ -100,9 +100,17 @@ function getFastestPromise(array) {
  *    });
  *
  */
-function chainPromises(/* array, action */) {
-  throw new Error('Not implemented');
+function chainPromises(array, action) {
+  const arr = [];
+  async function prom() {
+    return array;
+  }
+  return prom().then((arr1) => {
+    arr1.forEach((promise) => promise
+      .then((promise2) => arr.push(promise2)).catch((err) => { throw new Error(err); }));
+  }).then(() => arr.reduce(action));
 }
+
 
 module.exports = {
   willYouMarryMe,
