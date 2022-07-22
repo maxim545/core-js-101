@@ -116,55 +116,41 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
-const cssSelectorBuilder = {
-
-  str: '',
-  elArr: [],
-  idArr: [],
-  pseudoArr: [],
-  arr: [],
-  elementsArr: [],
-  arrCombinator: [],
-  countArr: [],
-  count: 0,
-  errObj: {
-    el: 'Element, id and pseudo-element should not occur more then one time inside the selector',
-    sel: 'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
-  },
+class MSBES {
+  constructor() {
+    this.str = '';
+    this.elArr = [];
+    this.idArr = [];
+    this.pseudoArr = [];
+    this.countArr = [];
+    this.errObj = {
+      el: 'Element, id and pseudo-element should not occur more then one time inside the selector',
+      sel: 'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+    };
+  }
 
   element(value) {
     if (!this.countArr.includes(0)) { this.countArr.push(0); }
-    this.countArr.forEach(() => {
-      if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
-        throw new Error(this.errObj.sel);
-      }
-    });
-    if (this.elArr.includes('element') && !this.arrCombinator.length) {
+    if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
+      throw new Error(this.errObj.sel);
+    }
+    if (this.elArr.includes('element')) {
       throw new Error(this.errObj.el);
     } else {
       this.elArr.push('element');
     }
-    this.elementsArr.push(value);
-    if (this.count >= 1) {
-      this.str = `${this.str}&${value}`;
-    } else {
-      this.str += value;
-    }
     this.idArr = [];
     this.pseudoArr = [];
-    this.count += 1;
-    this.arr.push(value);
+    this.str += value;
     return this;
-  },
+  }
 
   id(value) {
     if (!this.countArr.includes(1)) { this.countArr.push(1); }
-    this.countArr.forEach(() => {
-      if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
-        throw new Error(this.errObj.sel);
-      }
-    });
-    if (this.idArr.includes('id') && !this.arrCombinator.length) {
+    if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
+      throw new Error(this.errObj.sel);
+    }
+    if (this.idArr.includes('id')) {
       throw new Error(this.errObj.el);
     } else {
       this.idArr.push('id');
@@ -172,63 +158,51 @@ const cssSelectorBuilder = {
     this.elArr = [];
     this.pseudoArr = [];
     this.str += `#${value}`;
-    this.arr.push(`#${value}`);
     return this;
-  },
+  }
 
   class(value) {
     if (!this.countArr.includes(2)) { this.countArr.push(2); }
-    this.countArr.forEach(() => {
-      if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
-        throw new Error(this.errObj.sel);
-      }
-    });
+    if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
+      throw new Error(this.errObj.sel);
+    }
     this.elArr = [];
     this.idArr = [];
     this.pseudoArr = [];
     this.str += `.${value}`;
-    this.arr.push(`.${value}`);
     return this;
-  },
+  }
 
   attr(value) {
     if (!this.countArr.includes(3)) { this.countArr.push(3); }
-    this.countArr.forEach(() => {
-      if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
-        throw new Error(this.errObj.sel);
-      }
-    });
+    if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
+      throw new Error(this.errObj.sel);
+    }
     this.elArr = [];
     this.idArr = [];
     this.pseudoArr = [];
     this.str += `[${value}]`;
-    this.arr.push(`[${value}]`);
     return this;
-  },
+  }
 
   pseudoClass(value) {
     if (!this.countArr.includes(4)) { this.countArr.push(4); }
-    this.countArr.forEach(() => {
-      if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
-        throw new Error(this.errObj.sel);
-      }
-    });
+    if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
+      throw new Error(this.errObj.sel);
+    }
     this.elArr = [];
     this.idArr = [];
     this.pseudoArr = [];
     this.str += `:${value}`;
-    this.arr.push(`:${value}`);
     return this;
-  },
+  }
 
   pseudoElement(value) {
     if (!this.countArr.includes(5)) { this.countArr.push(5); }
-    this.countArr.forEach(() => {
-      if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
-        throw new Error(this.errObj.sel);
-      }
-    });
-    if (this.pseudoArr.includes('pseudoElement') && !this.arrCombinator.length) {
+    if (this.countArr[0] > this.countArr[1] && this.countArr.length <= 2) {
+      throw new Error(this.errObj.sel);
+    }
+    if (this.pseudoArr.includes('pseudoElement')) {
       throw new Error(this.errObj.el);
     } else {
       this.pseudoArr.push('pseudoElement');
@@ -236,51 +210,73 @@ const cssSelectorBuilder = {
     this.elArr = [];
     this.idArr = [];
     this.str += `::${value}`;
-    this.arr.push(`::${value}`);
     return this;
+  }
+
+  combine(selector1, combinator, selector2) {
+    this.str += `${selector1.clear()} ${combinator} ${selector2.clear()}`;
+    return this;
+  }
+
+  clear() {
+    const { str } = this;
+    this.str = '';
+    this.elArr = [];
+    this.idArr = [];
+    this.pseudoArr = [];
+    this.countArr = [];
+    return str;
+  }
+}
+
+
+const cssSelectorBuilder = {
+  element(value) {
+    const element = new MSBES();
+    return element.element(value);
   },
 
-  // eslint-disable-next-line no-unused-vars
+  id(value) {
+    const element = new MSBES();
+    return element.id(value);
+  },
+
+  class(value) {
+    const element = new MSBES();
+    return element.class(value);
+  },
+
+  attr(value) {
+    const element = new MSBES();
+    return element.attr(value);
+  },
+
+  pseudoClass(value) {
+    const element = new MSBES();
+    return element.pseudoClass(value);
+  },
+
+  pseudoElement(value) {
+    const element = new MSBES();
+    return element.pseudoElement(value);
+  },
+
   combine(selector1, combinator, selector2) {
-    this.arrCombinator.push(combinator);
-    return this;
+    const element = new MSBES();
+    return element.combine(selector1, combinator, selector2);
   },
 
   clear() {
-    this.elArr = [];
-    const copiedArr = [...this.arr];
-    const copiedArrCombinator = this.arrCombinator.reverse();
-    const copiedEleemts = this.elementsArr;
-    let str = '';
-    if (copiedArrCombinator.length) {
-      copiedEleemts.forEach((el, i) => {
-        if (i > 0 && copiedEleemts.length > 1) {
-          const index = copiedArr.indexOf(el);
-          copiedArr.splice(index, 1, ` ${copiedArrCombinator.shift()} ${el}`);
-        } else if (i === 0 && copiedEleemts.length === 1) {
-          const index = copiedArr.indexOf(el);
-          copiedArr.splice(index, 1, ` ${copiedArrCombinator.shift()} ${el}`);
-        }
-      });
-    }
-    copiedArr.forEach((el) => {
-      str += el;
-    });
-    this.str = '';
-    this.arr = [];
-    this.elementsArr = [];
-    this.arrCombinator = [];
-    this.count = 0;
-    this.countArr = [];
-    return str;
+    const element = new MSBES();
+    return element.clear();
   },
-
 };
 
 // eslint-disable-next-line no-extend-native
 Object.prototype.stringify = function stringify() {
   return this.clear();
 };
+
 
 module.exports = {
   Rectangle,
